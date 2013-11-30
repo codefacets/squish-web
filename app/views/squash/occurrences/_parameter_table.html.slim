@@ -1,0 +1,30 @@
+table.parameter
+  thead
+    tr
+      th Name
+      th Class
+      th Value
+  - if values.blank?
+    td.no-results[colspan=3] No values
+  - else
+    - values.sort.each do |(name, value)|
+      - if parameter_invalid?(value)
+        tr.error
+          td[colspan=3]= "Parameter #{content_tag :tt, name} has an invalid format. This is a bug in the #{@occurrence.client} client library."
+        - next
+      tr
+        td
+          tt= name
+        td
+          - klass = parameter_class(value)
+          = klass.start_with?('(') ? text(klass) : tt(klass)
+        td
+          - if parameter_unformatted?(value)
+            = format_parameter(value)
+          - elsif parameter_primitive?(value)
+            samp= value.inspect
+          - else
+            - if parameter_complex?(value) && (xml = value['keyed_archiver'].presence)
+              - value['keyed_archiver'] = ''
+              = REXML::Document.new(xml).write(value['keyed_archiver'], 1)
+            .complex-object[data-object=value.to_json]

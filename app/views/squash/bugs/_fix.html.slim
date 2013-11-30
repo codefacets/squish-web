@@ -1,0 +1,8 @@
+- if !@bug.fixed?
+  div.alert.important This bug was automatically reopened. Perhaps the fix below didn’t work?
+
+- if @bug.resolution_commit
+  = render 'squash/bugs/commit_summary', commit: @bug.resolution_commit
+  = render 'squash/bugs/diffs', id: 'fix', commit: @bug.resolution_commit
+- else
+  p "This bug was fixed by commit #{commit_link(@project, @bug.resolution_revision)} . This revision does not appear in the Git repository. (You might be able to fix this by refreshing the page.)"

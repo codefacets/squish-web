@@ -1,0 +1,15 @@
+fieldset
+  h5 PagerDuty Integration
+  p Squash can create a PagerDuty incident for new bugs. When the bug is assigned, the incident will automatically be acknowledged. The incident will also be resolved automatically when the bug is resolved.
+  = f.label :always_notify_pagerduty, value: false, class: 'radio-label' do
+    = f.radio_button :always_notify_pagerduty, false
+    ' notify PagerDuty when a bug exceeds the critical threshold (see above)
+  = f.label :always_notify_pagerduty, value: true, class: 'radio-label' do
+    = f.radio_button :always_notify_pagerduty, true
+    ' always notify PagerDuty
+  = f.label :pagerduty_service_key
+  = f.text_field :pagerduty_service_key
+  = f.label :pagerduty_enabled, class: 'checkbox-label' do
+    = f.check_box :pagerduty_enabled
+    = ::Project.human_attribute_name :pagerduty_enabled
+  p.help-block If you uncheck this, PagerDuty will not be notified of any new occurrences. Acknowledgements and resolutions of existing incidents will still be sent.

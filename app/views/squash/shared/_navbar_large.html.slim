@@ -1,0 +1,12 @@
+nav.container.full-size-only
+  ul
+    li#logo= link_to image_tag('bug.png')+" Squash".html_safe, root_url
+    - if logged_in?
+      = render 'squash/shared/navbar_projects', suffix: 'large'
+      = render 'squash/shared/navbar_environments', suffix: 'large' if @project
+      li#quicknav-container= search_field :q, id: 'quicknav', placeholder: 'Search'
+      li= link_to 'My Account', account_url
+      li= link_to content_tag(:i,nil,class:'icon-signout').html_safe, logout_url
+    - else
+      li#quicknav-container &nbsp;
+      li= link_to 'Log In', login_url

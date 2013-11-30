@@ -1,0 +1,25 @@
+dl
+  dt Hostname
+  dd= @occurrence.hostname
+  dt PID
+  dd= @occurrence.pid
+  - if @occurrence.root?
+    dt Root
+    dd= @occurrence.root
+  - if @occurrence.parent_process?
+    dt Parent Process
+    dd= @occurrence.parent_process
+  - unless @occurrence.process_native.nil?
+    dt Ran Natively?
+    dd= @occurrence.process_native? ? "Yes" : "No"
+  - if @occurrence.process_path?
+    dt Launch Path
+    dd= @occurrence.process_path
+
+  - if @occurrence.arguments
+    dt Launch Arguments
+    dd
+      kbd= @occurrence.arguments
+
+h4 UNIX Environment
+= render 'squash/occurrences/parameter_table', values: @occurrence.env_vars

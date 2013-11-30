@@ -1,0 +1,9 @@
+dl
+  dt XMLHttpRequest (Ajax)
+  dd= @occurrence.xhr? ? 'Yes' : 'No')
+
+h4 Parameters
+= render 'squash/occurrences/parameter_table', values: @occurrence.params
+
+h4 Headers
+= render 'squash/occurrences/parameter_table', values: @occurrence.headers

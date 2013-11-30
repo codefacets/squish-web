@@ -1,0 +1,29 @@
+/ needs :project, :membership
+- @page_title = "My Membership in #{@project.name}"
+- @breadcrumbs = [@project, 'Membership']
+
+= full_width_section do
+  .row
+    .four.columns
+      h5 Email Notifications
+    .twelve.columns
+      = form_for @membership, url: { controller: 'project/membership', action: 'update', project_id: @project.to_param }, method: :patch, html: { class: 'labeled'} do |f|
+        fieldset
+          h5 email me when…
+          = f.label :send_assignment_emails do
+            = f.check_box :send_assignment_emails
+            ' I am assigned to a bug
+          = f.label :send_comment_emails do
+            = f.check_box :send_comment_emails
+            ' Someone comments on a bug
+          p.help-block You will only be notified for bugs you are assigned to or have commented on.
+          = f.label :send_resolution_emails do
+            = f.check_box :send_resolution_emails
+            ' Someone else resolves a bug I am assigned to
+          .form-actions= f.submit class: 'default'
+  .row
+    .four.columns
+      h5 Emails I’ve taken responsibility for
+    .twelve.columns
+      .email-aliases
+        p= "If you want to take responsibility for all exceptions caused by someone else’s commits to this project, add his or her email address above. You’ll be emailed instead. If you want to take responsibility for that person’s exceptions across all projects (say, s/he left the company), visit #{link_to "your account page", account_url}."

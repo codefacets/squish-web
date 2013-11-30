@@ -1,0 +1,17 @@
+nav.container.compact-only
+  ul
+    li#logo= link_to image_tag('bug.png')+" Squash".html_safe, root_url
+    - if logged_in?
+      li#quicknav-container &nbsp;
+      li= link_to content_tag(:i,'',class:'icon-signout').html_safe, logout_url
+      li= link_to content_tag(:i,'',class:'icon-chevron-down').html_safe, '#expanded-nav', rel: 'dropdown'
+    - else
+      li#quicknav-container &nbsp;
+      li=link_to content_tag(:i,'',class:'icon-signin').html_safe, login_url
+
+- if logged_in?
+  nav.container.compact-only#expanded-nav
+    ul
+      = render 'squash/shared/navbar_projects', suffix: 'small'
+      = render 'squash/shared/navbar_environments', suffix: 'small' if @project
+      li= link_to 'My Account', account_url

@@ -1,0 +1,8 @@
+fieldset
+  h5  Source Control
+  = f.label :repository_url
+  = f.text_field :repository_url, required: true
+  p If you change this, you might also want to change…
+  = f.label :commit_url_format
+  = f.text_field :commit_url_format
+  p.help-block= "This is the template Squash uses to generate links to web pages with information about a commit in your project. Type #{content_tag :kbd, '%{commit}'}  where you want the commit’s ID to appear."

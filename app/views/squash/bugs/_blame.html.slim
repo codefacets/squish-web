@@ -1,0 +1,10 @@
+- if @bug.blamed_commit
+  - victims = @bug.blamed_users
+  - if victims.any?
+    p= "According to the VCS blame function, fault seems to lie with #{victims.map { |v| capture { mail_to v.email, (v.user.try!(:name) || v.email) } }.to_sentence}.*"
+  = render 'squash/bugs/commit_summary', commit: @bug.blamed_commit
+  - if victims.any?
+    p.small &#42; The mailto link is not provided for purposes of sending hate mail.
+  = render 'squash/bugs/diffs', id: 'blame', commit: @bug.blamed_commit
+- else
+  p= "According to the VCS blame function, commit #{commit_link(@project, @bug.blamed_revision)} seems to be at fault. This revision does not appear in the Git repository. (You might be able to fix this by refreshing the page.)"

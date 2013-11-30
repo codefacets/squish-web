@@ -1,0 +1,15 @@
+fieldset
+  h5 General Settings
+  = f.label :uses_releases, value: false, class: 'radio-label' do
+    = f.radio_button :uses_releases, false
+    ' this product is deployed to a server
+  = f.label :uses_releases, value: true, class: 'radio-label' do
+    = f.radio_button :uses_releases, true
+    ' this product is distributed to client platforms
+  = f.label :disable_message_filtering, class: 'checkbox-label' do
+    = f.check_box :disable_message_filtering
+    = ::Project.human_attribute_name :disable_message_filtering
+  p.help-block= "If unchecked, exception messages will be scanned for potentially sensitive information (phone numbers, emails);  those substrings will be replaced with tokens such as #{content_tag :samp, '[EMAIL?]'}."
+  = f.label :blamer_type
+  = f.select :blamer_type, Blamer::Base.subclasses.map { |c| [c.human_name, c.to_s] }
+  p.help-block If you would like to avoid making potentially slow requests to the Git repository, at the expense of less intelligent code analysis, choose the Git-free blamer.

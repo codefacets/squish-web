@@ -1,0 +1,1 @@
+require 'squash-engine'

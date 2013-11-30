@@ -1,0 +1,8 @@
+= render 'squash/projects/configuration/api_key'
+= form_for @project, html: { class: 'labeled'} do |f|
+  = render 'squash/projects/configuration/general_settings', f: f
+  = render 'squash/projects/configuration/paths', f: f
+  = render 'squash/projects/configuration/emails', f: f
+  = render 'squash/projects/configuration/source_control', f: f
+  = render 'squash/projects/configuration/pagerduty', f: f unless Squash::Configuration.pagerduty.disabled
+  .form-actions= f.submit class: 'default'

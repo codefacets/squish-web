@@ -1,0 +1,9 @@
+.inset-content
+  form#aggregation-filter
+    p Select up to four dimensions to analyze:
+    #aggregation-options
+      - 4.times do
+        div
+          = select_tag "dimensions[]", options_for_select(@aggregation_dimensions), id: nil
+      #agg-submit= submit_tag "Go", class: 'default small'
+  #aggregation-charts

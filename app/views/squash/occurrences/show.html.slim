@@ -1,0 +1,64 @@
+/ include BacktraceRendering
+/ needs :project, :environment, :bug, :occurrence
+- @page_title = "Occurrence of Bug ##{number_with_delimiter @bug.number} (#{@project.name} #{@environment.name.capitalize})"
+- @breadcrumbs = [ @project, @environment, @bug, @occurrence ]
+
+
+= full_width_section do
+  - if @occurrence.truncated?
+    - if @occurrence.redirect_target
+      p.alert.info= "This occurrence has been moved. (This typically happens when symbolication changes the bug's static analysis.) #{link_to 'Continue to the moved occurrence.', project_environment_bug_occurrence_url(@project, @environment, @occurrence.redirect_target.bug, @occurrence.redirect_target)}"
+    - else
+      p.alert.error This occurrence has been truncated. Only basic information is available.
+    = render 'squash/occurrences/basic_info'
+  - else
+    #occurrence-header
+      h1= @bug.class_name
+      - if @occurrence.server?
+        h4= @occurrence.hostname
+      - elsif @occurrence.web?
+        h4= @occurrence.host
+      - elsif @occurrence.client?
+        h4= @occurrence.device_type
+    = render 'squash/occurrences/basic_info'
+    h5 Message
+    pre.scrollable= @occurrence.message
+    - if @occurrence.web?
+      h5 Request
+      pre.scrollable= "#{@occurrence.request_method} #{@occurrence.url.to_s}"
+
+= tab_header do
+  ul.tab-header
+    li.active= link_to "Backtrace", '#backtrace', rel: 'tab'
+    - if @occurrence.nested?
+      li= link_to "Parents", '#parents', rel: 'tab'
+    - if @occurrence.rails?
+      li= link_to "Rails", '#rails', rel: 'tab'
+    - if @occurrence.request?
+      li= link_to "Request", '#request', rel: 'tab'
+    - if @occurrence.server?
+      li= link_to "Process", '#process', rel: 'tab'
+    - if @occurrence.client? || @occurrence.geo? || @occurrence.mobile?
+      li= link_to "Device", '#device', rel: 'tab'
+    - if @occurrence.browser? || @occurrence.screen?
+      li= link_to "Browser", '#browser', rel: 'tab'
+    - if @occurrence.additional?
+      li= link_to "User Data", '#user_data', rel: 'tab'
+
+= tab_container do
+  .tab-content.tab-primary
+    .active#backtrace= render 'squash/occurrences/backtrace'
+    - if @occurrence.nested?
+      #parents= render 'squash/occurrences/parents'
+    - if @occurrence.rails?
+      #rails= render 'squash/occurrences/rails'
+    - if @occurrence.request?
+      #request= render 'squash/occurrences/request'
+    - if @occurrence.server?
+      #process= render 'squash/occurrences/process'
+    - if @occurrence.client? || @occurrence.geo? || @occurrence.mobile?
+      #device= render 'squash/occurrences/device'
+    - if @occurrence.browser? || @occurrence.screen?
+      #browser= render 'squash/occurrences/browser'
+    - if @occurrence.additional? || !orphan_data.empty?
+      #user_data= render 'squash/occurrences/user_data'

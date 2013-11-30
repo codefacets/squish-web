@@ -1,0 +1,60 @@
+= render 'squash/projects/header'
+
+/ needs :project, :environment, :filter_users
+- @page_title = "#{@project.name} #{@environment.name.capitalize} Bugs"
+- @breadcrumbs = [@project, @environment]
+- if @project.uses_releases?
+  - @breadcrumbs_stats = [ \
+      [ @environment.bugs_count, "unresolved, unassigned bug" ], \
+      [ @environment.bugs.where(fixed: false, irrelevant: false, any_occurrence_crashed: true).count, "bug with at least one occurrence that resulted in a crash", "bugs with at least one occurrence that resulted in a crash"], \
+      [ Occurrence.joins(:bug).where(bugs: {fixed: false, irrelevant: false}, crashed: true).count, "crash associated with an unresolved bug", "crashes associated with an unresolved bug" ], \
+      [ DeviceBug.joins(:bug).where(bugs: {fixed: false, irrelevant: false, environment_id: @environment.id}).count, "device that crashed because of an unresolved bug", "devices that crashed because of an unresolved bug"] \
+    ]
+
+= full_width_section do
+  / filter
+  form#filter
+    p
+      ' Show me
+      = select_tag 'filter[fixed]', options_for_select([%w(unresolved false), %w(resolved true)]), class: 'input-small'
+      ' &nbsp;
+      = select_tag 'filter[irrelevant]', options_for_select([%w(critical false), %w(irrelevant true)]), class: 'input-small'
+      - if @project.uses_releases?
+        ' exceptions that
+        = select_tag 'filter[any_occurrence_crashed]', options_for_select([['did or did not', nil], ['did', 'true'], ['did not', 'false']]), class: 'input-small'
+        ' result in a crash,
+      - else
+        ' exceptions
+      ' assigned to
+      - options = {'Sets' => [%w(nobody nobody), %w(somebody somebody), ['all bugs', 'anybody']]}
+      - options['Individuals'] = @filter_users.map { |fu| [fu.username, fu.id] } unless @filter_users.empty?
+      = select_tag 'filter[assigned_user_id]', grouped_options_for_select(options, 'nobody'), class: 'input-small'
+      - if @environment.deploys.builds.any?
+        ' that occurred in build
+        =  select_tag 'filter[deploy_id]', options_for_select(@environment.deploys.builds.by_time.map { |d| ["#{d.build} (#{d.version})", d.id] }.unshift(['any', nil])), class: 'input-small'
+      p
+        ' Search exception classes, exception messages, and comments:
+        = text_field_tag 'filter[search]', '', class: 'input-medium', id: 'filter_search'
+        span.aux= "(this field uses #{link_to "PostgreSQL "+content_tag(:tt,'tsquery')+" syntax", '#search-syntax-help', rel: 'modal'})"
+
+= link_to ("Help with PostgreSQL "+content_tag(:tt,'tsquery')+" syntax").html_safe, '#', class: 'button secondary tiny radius', data: { 'reveal-id' => 'search-syntax-help' }
+
+table#bugs[data-source=squash_project_environment_bugs_url(@project, @environment, format: 'json')]
+
+.reveal-modal#search-syntax-help[data-reveal]
+  a.close-reveal-modal &#215;
+  h3 Search Query Syntax
+  .modal-body
+    p Class names, messages, and comments are searched.
+    pre= "(windows | linux) & !osx & bsod"
+    p Find exceptions relating to “windows” or “linux” and “bsod” that don’t contain “osx”.
+    pre 'micorosft windows'
+    p Search for the phrase “microsoft windows”.
+    pre ArgumentError:A & my_method:B & 'fixed for now':C
+    p Search for bugs with the class name “ArgumentError”, the word “my_method” in the message, and a comment containing “fixed for now”.
+    pre ArgumentError:AC
+    p Search for bugs with the class name “ArgumentError” or with comments containing “ArgumentError”.
+    pre Invalid:*
+    p Search for words starting with “Invalid”.
+    pre ActiveRecord:*A
+    p Search for bugs with class names beginning with “ActiveRecord”.

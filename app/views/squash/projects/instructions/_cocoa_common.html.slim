@@ -1,0 +1,27 @@
+ pre <<-OBJC, class: 'brush: obj-c; light: true'
+- (BOOL) application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+    [SquashCocoa sharedClient].APIHost = @"#{request.protocol + request.host_with_port}";
+    [SquashCocoa sharedClient].APIKey = @"#{@project.api_key}";
+    [SquashCocoa sharedClient].environment = @"production";
+    [SquashCocoa sharedClient].revision = @"GIT_REVISION_OF_RELEASED_PRODUCT";
+    [[SquashCocoa sharedClient] reportErrors];
+    [[SquashCocoa sharedClient] hook];
+    return YES;
+}
+        OBJC
+
+        p do
+          text "To symbolicate your exceptions, download the "
+          strong "squash_ios_symbolicator"
+          text " gem. This gem installs a "
+          code "symbolicator"
+          text " binary; add a Run Script phase to your project’s Archive scheme that executes that binary."
+        end
+
+        p do
+          text "To notify Squash of releases (public or internal), use the "
+          code "squash_release"
+          text " binary installed by the same gem. Add a Run Script phase to your project's Archive scheme that executes the binary."
+        end
+
+        p "More information is available in the README for SquashCocoa."

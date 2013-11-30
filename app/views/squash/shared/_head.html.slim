@@ -1,0 +1,13 @@
+meta[charset='utf-8']
+meta[name='description' content="A Squarish bug reporting, analytics, and management tool."]
+meta[name='author' content="Square, Inc."]
+meta[name='viewport' content='width=device-width, initial-scale=1.0']
+= favicon_link_tag
+= csrf_meta_tags
+title= page_title ? "Squash | #{page_title}" : "Squash: A Squarish exception tool"
+= stylesheet_link_tag 'application'
+= render 'squash/shared/inline_css'
+/[if lt IE 9]
+  = javascript_include_tag 'http://html5shim.googlecode.com/svn/trunk/html5.js'
+/[if lt IE 8]
+  = javascript_include_tag 'flot/excanvas'

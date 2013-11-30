@@ -1,0 +1,22 @@
+- deletions = diff.patch.split("\n").select { |l| l.start_with?('-') }.size - 1
+- additions = diff.patch.split("\n").select { |l| l.start_with?('+') }.size - 1
+
+- icon = 'edit'
+- icon = 'plus-sign'  if diff.type == 'new'
+- icon = 'minus-sign' if diff.type == 'deleted'
+- icon = 'share-alt'  if diff.type == 'renamed'
+
+- title = content_tag(:i,'',class:"icon-#{icon}")+content_tag(:strong,diff.path)+content_tag(:code,diff.type,class:'short')
+- title_inner = ""
+- title_inner += content_tag :span, '+'+number_with_delimiter(additions), class: 'additions' if additions > 0
+- title_inner += content_tag :span, '-'+number_with_delimiter(additions), class: 'deletions' if deletions > 0
+- title = title + content_tag( :span, title_inner.html_safe, class: 'additions-deletions' )
+- div_id = "#{id}-diff-#{index}"
+
+= link_to title, "##{div_id}"
+.content[id=div_id class="#{'active' if diff.path == @bug.file}"]
+  - if diff.binary?
+    p (binary)
+  - else
+    pre[class="brush: diff, light: true"]
+      = diff.patch.encode('UTF-8')

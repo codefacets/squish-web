@@ -1,0 +1,22 @@
+doctype html
+html[lang='en']
+  head= render 'squash/shared/head'
+  body[class="#{controller_name} #{tabbed? ? 'tabbed' : nil}" id=controller_name, action_name].join('-')]
+    #navbar-contianer
+      = navbar_small
+      = navbar_large
+    - if breadcrumbs.present?
+      #breadcrumbs-container
+        .container
+          render_breadcrumbs(*breadcrumbs)
+          - stats = breadcrumbs_stats
+          - unless stats.empty?
+            render_breadcrumbs_stats(stats)
+    = yield
+    = render 'squash/shared/footer'
+    #flashes
+    = javascript_inclue_tag 'application'
+    = render 'squash/shared/inline_javascript'
+    = javascript_tag "new Flash('alert').text(\"#{escape_javascript flash[:alert]}\")") if flash[:alert]
+    = javascript_tag "$(window).oneTime(250, function() { new Flash('notice').text(\"#{escape_javascript flash[:notice]}\"); })") if flash[:notice]
+    = javascript_tag "$(window).oneTime(500, function() { new Flash('success').text(\"#{escape_javascript flash[:success]}\"); })") if flash[:success]

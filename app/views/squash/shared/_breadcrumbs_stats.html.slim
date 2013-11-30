@@ -1,0 +1,6 @@
+#breadcrumbs-stats
+  - stats.each do |(number, singular, plural)|
+    - plural ||= singular.pluralize
+    .shown
+      strong= number_with_delimiter(number)
+      span= number == 1 ? singular : plural

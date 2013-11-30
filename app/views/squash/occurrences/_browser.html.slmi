@@ -1,0 +1,8 @@
+- if @occurrence.browser?
+  dl
+    dt Browser
+    dd= "#{@occurrence.browser_name} — version #{@occurrence.browser_version}"
+    dt Operating System
+    dd= @occurrence.browser_os
+    dt Render Engine
+    dd= "#{@occurrence.browser_engine} — version #{@occurrence.browser_engine_version}"

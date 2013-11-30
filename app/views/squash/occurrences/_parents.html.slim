@@ -1,0 +1,15 @@
+- @occurrence.parent_exceptions.each_with_index do |parent, index|
+  details
+    summary
+      tt= parent['class_name']
+      = " (via #{content_tag :tt, parent['association']})" if parent['association'].present?
+    h6 Message
+    pre.scrollable= parent['message']
+    ul.pills.backtrace-tabs
+      li.active= link_to "Backtraces", "#backtraces#{index}", rel: 'tab'
+      li= link_to "Instance Variables", "#ivars#{index}", rel: 'tab'
+    div.tab-content#parents-tab-content
+      .active[id="backtraces#{index}"]
+        / render_backtraces Occurrence.convert_backtraces(parent['backtraces']), "parent#{index}" }
+      div[id="ivars#{index}"]
+        = render 'squash/occurrences/parameter_table', values: parent['ivars']

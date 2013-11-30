@@ -1,0 +1,24 @@
+p
+  | Add the&nbsp;
+  strong squash_ruby
+  | &nbsp;gem to your Gemfile, then configure Sqush like so:
+  pre[class="brush: ruby; light: true"]
+    | Squash::Ruby.configure api_host: '#{request.protocol + request.host_with_port}',
+    |   api_key: '#{@project.api_key}',
+    |   environment: 'production'
+
+p
+  | Surround your code with a&nbsp;
+  code begin
+  | /
+  code rescue
+  | &nbsp;statement and call
+  code Squash::Ruby.notify
+  | &nbsp; in the rescue block:
+  pre[class="brush: ruby; light: true"]
+    | begin
+    |   your_code_here
+    | rescue Object => error
+    |   Squash::Ruby.notify error
+    |   raise # for normal Ruby exception handling
+    | end

@@ -1,0 +1,89 @@
+= render 'squash/projects/header'
+
+/ include Accordion
+/ needs :project, :environment, :bug, :aggregation_dimensions, :new_issue_url
+- @page_title = "Bug ##{number_with_delimiter @bug.number} (#{@project.name} #{@environment.name.capitalize})"
+- @breadcrumbs = [ @project, @environment, @bug ]
+- index_fields = Squash::OccurrencesController::INDEX_FIELDS[@bug.client].map { |key| [ key, Squash::Occurrence.human_attribute_name(key).titleize ] }.to_json
+
+/ metric shit-ton of URLs
+= hidden_field_tag 'bug-events-url', squash_project_environment_bug_events_url(@project, @environment, @bug, format: 'json')
+= hidden_field_tag 'commits-url', squash_project_commits_url(@project, format: 'json')
+= hidden_field_tag 'comments-url', squash_project_environment_bug_comments_url(@project, @environment, @bug, format: 'json')
+= hidden_field_tag 'occurrences-url', squash_project_environment_bug_occurrences_url(@project, @environment, @bug, format: 'json')
+= hidden_field_tag 'watch-url', watch_squash_project_environment_bug_url(@project, @environment, @bug, format: 'json')
+= hidden_field_tag 'aggregate-occurrences-url', aggregate_squash_project_environment_bug_occurrences_url(@project, @environment, @bug, format: 'json')
+= hidden_field_tag 'notify-deploy-url', notify_deploy_squash_project_environment_bug_url(@project, @environment, @bug, format: 'json')
+= hidden_field_tag 'notify-occurrence-url', notify_occurrence_squash_project_environment_bug_url(@project, @environment, @bug, format: 'json')
+= hidden_field_tag 'histogram-occurence-url', histogram_squash_project_environment_bug_occurrences_url(@project, @environment, @bug, format: 'json')
+= hidden_field_tag 'user-id', current_user.id
+= hidden_field_tag 'user-role', current_user.role(@project)
+= hidden_field_tag 'jira-issue-url', squash_jira_issue_url('REPLACEME')
+= hidden_field_tag 'jira-statuses-url', squash_jira_projects_url(format: :json)
+= hidden_field_tag 'jira-projects-url', squash_jira_statuses_url(format: :json)
+= hidden_field_tag 'new-issue-url', @new_issue_url
+= hidden_field_tag 'index-fields', index_fields
+= hidden_field_tag 'jira-status-id', @bug.jira_status_id || ''
+
+= full_width_section do
+  / bug_title
+  h1
+    = @bug.class_name
+    = link_to '', '#', class: "icon-star#{'-empty' unless current_user.watches?(@bug)}", alt: 'Watch/unwatch this bug'
+  / notice_bars
+  - if @bug.fixed?
+    / fixed_bar
+    .alert.success
+      ' This bug has been marked as resolved.
+      - if @bug.resolution_revision
+        = "(#{commit_link(@project, @bug.resolution_revision)})"
+      = "The fix has been deployed." if @bug.fix_deployed?
+  - if @bug.duplicate?
+    / duplicate_bar
+    .alert.warning= "This bug is a duplicate of #{link_to '#'+number_with_delimiter(@bug.duplicate_of.number), project_environment_bug_url(@project, @environment, @bug.duplicate_of)}."
+  - unless current_user.role(@bug)
+    / uneditable_bar
+    p.alert.info= "You will need to #{link_to "join this project", join_project_my_membership_url(@project), :'data-sqmethod' => 'POST', id: 'join-link'} to edit this bug."
+  / bug_info
+  h5 Message
+  pre.scrollable= @bug.message_template
+
+  = render 'squash/bugs/location'
+
+  - if @bug.special_file?
+    - case @bug.file # TODO don't guess, record this information
+    - when /^0x/
+      p.alert.info This bug has not been symbolicated. If you would like meaningful backtraces, please upload a symbolication file using your language’s client library.
+    - when /^https?:\/\//
+      p.alert.info No JavaScript source map was found for this bug. If you would like meaningful backtraces, please upload a source map using the Squash JavaScript client library.
+    - when /\.java$/
+      p.alert.info No Java renamelog was found for this bug. If you would like more meaningful backtraces, please upload a renamelog.xml file using the Squash Java deobfuscator.
+    - else
+      p.alert.error The backtraces for this bug cannot be displayed because they are in an unknown format.
+
+
+dl.tabs[data-tab]
+  dd.active= link_to "History", '#history', rel: 'tab'
+  - if @bug.blamed_revision
+    dd= link_to 'Git Blame', '#blame', rel: 'tab'
+  - if @bug.resolution_revision
+    dd= link_to 'The Fix', '#fix', rel: 'tab'
+  - if current_user.role(@project)
+    dd= link_to 'Management', '#management', rel: 'tab'
+  dd= link_to 'Notifications', '#notifications', rel: 'tab'
+  dd= link_to "Comments #{'('+number_with_delimiter(@bug.comments_count)+')' if @bug.comments_count > 0}", '#comments', rel: 'tab'
+  dd= link_to 'Aggregation', '#aggregation', rel: 'tab'
+  dd= link_to "Occurrences #{'('+number_with_delimiter(@bug.occurrences_count)+')' if @bug.occurrences_count > 0}", '#occurrences', rel: 'tab'
+
+div.tabs-content
+  .content.active#history= render 'squash/bugs/history'
+  - if @bug.blamed_revision
+    .content#blame= render 'squash/bugs/blame'
+  - if @bug.resolution_revision
+    .content#fix= render 'squash/bugs/fix'
+  - if current_user.role(@project)
+    .content#management= render 'squash/bugs/management'
+  .content#notifications= render 'squash/bugs/notifications'
+  .content#comments= render 'squash/bugs/comments'
+  .content#aggregation= render 'squash/bugs/aggregation'
+  .content#occurrences= render 'squash/bugs/occurrences'

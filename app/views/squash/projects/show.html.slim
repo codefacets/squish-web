@@ -1,0 +1,52 @@
+- @page_title = @project.name
+- @breadcrumbs = [ @project ]
+
+= render 'squash/projects/header'
+= render 'squash/projects/environments_grid'
+
+/ project_info
+= full_width_section(true) do
+  .row
+    .four.columns
+      / project_owner
+      h5 Owner
+      .profile-widget
+        = image_tag @project.owner.gravatar
+        h5= link_to @project.owner.name, respond_to?(:user_url) ? user_url(@project.owner) : squash_user_url(@project.owner)
+        div
+          strong= @project.owner.respond_to?(:username) ? @project.owner.username : @project.owner.name
+        div.small= "Created #{l @project.created_at, format: :short_date}"
+        div[style='clear:left;']
+
+      / project_overview
+      h5 Overview
+      dl
+        dt Environments
+        dd= number_with_delimiter(@project.environments.count)
+        dt Members
+        dd
+          = number_with_delimiter(@project.memberships.count)
+          = "(#{pluralize_with_delimiter(@project.memberships.where(admin: true).count, 'administrator')})"
+
+      h5 Settings
+      p= link_to "Configure and install Squash", edit_squash_project_url(@project) if action_name == 'show'
+      - if current_user.role(@project)
+        p= link_to "Change membership settings", edit_squash_project_my_membership_url(@project)
+      - else
+        p= button_to "Join this team", join_squash_project_my_membership_url(@project), :'data-sqmethod' => 'POST'
+
+    .twelve.columns
+      h5 Members
+      #members
+      - if current_user.role(@project) == :owner
+        / delete_project
+        h5 Delete
+        p
+          strong Beware!
+          ' Deleting this project will delete all environments, all bugs, all occurrences, all comments, and all other data.
+        p= button_to "Delete", squash_project_url(@project), method: :delete, data: { confirm: "Are you SURE you want to delete the project #{@project.name}?" }, class: 'button radius alert small'
+      - elsif !current_user.role(@project).nil?
+        p= button_to 'Leave Project', squash_project_my_membership_url(@project), :'data-sqmethod' => 'DELETE', class: 'warning'
+
+= javascript_tag do
+  = render template: 'squash/projects/show.js.erb'

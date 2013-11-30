@@ -1,0 +1,9 @@
+ p do
+          text "Download and compile the "
+          a "Squash Cocoa client framework", href: 'https://github.com/SquareSquash/cocoa'
+          text ", and add the compiled framework to your project. Add the framework to your Link Binary With Libraries build phase, "
+          code '#import <SquashCocoa/SquashCocoa.h>'
+          text ", then configure Squash like so:"
+        end
+
+        cocoa_common

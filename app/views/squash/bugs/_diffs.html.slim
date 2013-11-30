@@ -1,0 +1,9 @@
+- return unless commit.parents.size == 1
+- diffs = @project.repo.diff(commit.parent, commit)
+- return if diffs.size > 30 || diffs.size == 0
+
+details.diff
+  summary Diff
+  dl.accordion[data-accordion]
+    - diffs.each_with_index do |diff,i|
+      = render 'squash/bugs/diff', diff: diff, id: id, index: i

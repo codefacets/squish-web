@@ -1,0 +1,11 @@
+dl
+  dt Controller
+  dd= @occurrence.controller
+  dt Action
+  dd= @occurrence.action
+  - if @occurrence.session
+    h4 Session
+    = render 'squash/occurrences/parameter_table', values: @occurrence.session
+  - if @occurrence.flash
+    h4 Flash
+    = render 'squash/occurrences/parameter_table', values: @occurrence.flash

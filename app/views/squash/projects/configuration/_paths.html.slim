@@ -1,0 +1,12 @@
+fieldset
+  h4 Application and Library Paths
+  = f.label :filter_paths_string
+  = f.text_area :filter_paths_string, rows: 5, cols: ''
+  p.help-block List paths that are library, not application code, relative to your project root, one per line (or just paths to files you want excluded from blame). These can be whole paths or prefixes.
+  p.field-group
+    label[for='prefab'] Pre-fab paths:
+    = select_tag :prefab, options_for_select([ [ '', '' ], [ 'Ruby on Rails', 'rails' ]  ], selected: ''), id: 'prefab'
+    = button_tag 'Insert', id: 'insert-prefab', class: 'small'
+  = f.label :whitelist_paths_string
+  = f.text_area :whitelist_paths_string, rows: 5, cols: ''
+  p.help_block= "If you happen to have any files or paths within your filter paths (above) that #{content_tag :em, 'are'} application code, you can include them here, and they will be re-whitelisted."

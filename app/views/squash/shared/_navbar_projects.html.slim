@@ -1,0 +1,17 @@
+li.with-dropdown
+  = link_to (@project ? @project.name : "Projects") + content_tag(:i,'',class:'icon-chevron-down'), "#navbar-projects-#{suffix}", rel: 'dropdown'
+  ul.subnav[id="navbar-projects-#{suffix}"]
+    - if current_user.memberships.count == 0
+      / do nothing
+    - elsif current_user.memberships.count > 10
+      - current_user.memberships.order('created_at DESC').limit(10).includes(:project).map(&:project).each do |project|
+        li= link_to project.name, project
+      li= link_to 'More…', squash_projects_url
+      li.divider
+    - else
+      - current_user.memberships.order('created_at DESC').includes(:project).map(&:project).each do |project|
+        li= link_to project.name, project
+      li.divider
+    li= link_to current_user.memberships.count == 0 ? "All Projects" : "Other Project", squash_projects_url(anchor:'find')
+    li
+      = render 'squash/projects/new'

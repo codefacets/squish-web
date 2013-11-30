@@ -1,0 +1,5 @@
+- file_prefix = Rails.root.join 'app', 'views', params[:controller], params[:action]
+- file = file_prefix + '.css'
+= stylesheet_tag raw(File.read(file)) if File.exist?(file)
+- file = file_prefix + '.css.erb'
+= stylesheet_tag raw(ERB.new(File.read(file)).result(binding) if File.exist?(file)

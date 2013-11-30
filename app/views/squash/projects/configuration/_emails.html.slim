@@ -1,0 +1,23 @@
+fieldset
+  h5 Emails
+  = f.label :sender
+  = f.email_field :sender, placeholder: NotificationMailer.default[:from]
+  p.help-block Emails sent by Squash will appear to come from this address.
+  = f.label :critical_mailing_list
+  = f.email_field :critical_mailing_list
+  p.help-block Unresolved bugs that occur frequently will be reported to this address. Most engineers should be on this mailing list.
+  = f.label :all_mailing_list
+  = f.email_field :all_mailing_list
+  p.help-block All new bugs will be reported to this address. Few engineers should be on this mailing list.
+  = f.label :critical_threshold, required: true
+  = f.number_field :critical_threshold, min: 2
+  p.help-block The number of times an exception has to occur before it is sent to the critical mailing list.
+  = f.label :locale
+  = f.select :locale, I18n.available_locales.map(&:to_s), required: true
+  = f.label :sends_emails_outside_team, class: 'checkbox-label' do
+    = f.check_box :sends_emails_outside_team
+    = ::Project.human_attribute_name :sends_emails_outside_team
+  p.help-block If unchecked, people must be added as members of this project before they will receive exception alerts.
+  = f.label :trusted_email_domain
+  = f.text_field :trusted_email_domain, placeholder: Squash::Configuration.mailer.domain
+  p.help-block If the previous checkbox is checked, only email addresses with this domain will receive exception alerts. If blank, all email addresses will receive alerts.

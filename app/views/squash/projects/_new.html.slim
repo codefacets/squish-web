@@ -1,0 +1,9 @@
+- suffix = 'large' unless defined?(suffix)
+= form_for current_user.owned_projects.build, as: :project, url: squash_projects_url(format: 'json'), id: "new_project-#{suffix}" do |f|
+  h1 New Project
+  = f.text_field :name, placeholder: ::Project.human_attribute_name(:name).titleize, required: true
+  = f.text_field :repository_url, placeholder: ::Project.human_attribute_name(:repository_url).titleize.gsub('Url','URL'), required: true
+  p.help-block
+    strong Note:
+    '  This is the URL you would use with git-clone, not the GitHub web page for the repository.
+  = f.submit class: 'default'

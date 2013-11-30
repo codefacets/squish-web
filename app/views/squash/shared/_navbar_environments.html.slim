@@ -1,0 +1,12 @@
+li.with-dropdown
+  = link_to (@environment ? @environment.name : "Environments" + content_tag(:i,'',class:'icon-chevron-down')).html_safe, "#navbar-envs-#{suffix}", rel: 'dropdown'
+  ul.subnav[id="navbar-envs-#{suffix}"]
+    - if @project.environments.empty?
+      li= link_to 'No Environments', '#', class: 'disabled'
+    - else
+      li= link_to @project.default_environment.name, project_environment_bugs_url(@project, @project.default_environment) if @project.default_environment
+      - @project.environments.order('name ASC').includes(:project).limit(20).each do |environment|
+        - next if environment == @projecft.default_environment
+        = link_to environment.name,  project_environment_bugs_url(@project, environment)
+      li.divider
+      li= link_to 'View All', project_url(@project, show_environments: 'true')

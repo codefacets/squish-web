@@ -1,0 +1,12 @@
+= render 'squash/projects/header'
+
+h3 Project Settings
+
+p= link_to 'Learn how to add Squash to your project', '#', data: { 'reveal-id' => 'configure-project' }
+= render 'squash/projects/configuration_modal'
+
+
+- if [ :admin, :owner ].include?(current_user.role(@project))
+  = render 'squash/projects/configuration'
+- else
+  p You must be a project owner or administrator to configure project settings.

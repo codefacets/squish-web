@@ -1,0 +1,14 @@
+/ - file_prefix = Rails.root.join 'app', 'views', params[:controller]
+/
+/ - file = file_prefix.join "#{params[:action]}.js"
+/ - if File.exist?(file)
+/   = javascript_tag raw(File.read(file))
+/
+/ - file = file_prefix.join "#{params[:action]}.js.erb"
+/ - Rails.logger.info "~~~~~~~~~~~~~~~~>> #{file}"
+/ - if File.exist?(file)
+/   = javascript_tag raw(ERB.new(File.read(file)).result(binding))
+
+- asset = ::Rails.application.assets.find_asset(File.join(params[:controller],params[:action]+'.js'))
+- if asset
+ = javascript_tag asset.body

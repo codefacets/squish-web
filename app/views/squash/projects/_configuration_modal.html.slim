@@ -1,0 +1,10 @@
+.reveal-modal#configure-project[data-reveal]
+  h1= "Configure #{@project.name} to use Squash"
+  p Select your language or framework.
+  dl.accordion[data-accordion]
+    - libs = [ 'Ruby on Rails', 'Pure Ruby' ] #, 'Cocoa + Objective-C (iOS)', 'Cocoa + Objective-C (Mac OS X)', 'JavaScript', 'Java (Generic)' ]
+    - libs.each do |lib|
+      dd
+        = link_to lib, "##{lib.parameterize}"
+        .content[id=lib.parameterize]= render "squash/projects/instructions/#{lib.parameterize.underscore}"
+  a.close-reveal-modal &#215;

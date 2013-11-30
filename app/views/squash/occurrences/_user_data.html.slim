@@ -1,0 +1,15 @@
+- if @occurrence.ivars.present?
+  h4 Instance Variables
+  = render 'squash/occurrences/parameter_table', values: @occurrence.ivars
+
+- if @occurrence.user_data.present?
+  h4 User Data
+  = render 'squash/occurrences/parameter_table', values: @occurrence.user_data
+
+- if @occurrence.extra_data.present?
+  h4 Unrecognized Fields
+  = render 'squash/occurrences/parameter_table', values: @occurrence.extra_data
+
+- unless orphan_data.empty?
+  h4 Other Fields
+  = render 'squash/occurrences/parameter_table', values: orphan_data

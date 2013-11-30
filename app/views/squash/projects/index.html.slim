@@ -1,0 +1,21 @@
+= full_width_section do
+  h1= "Welcome, #{current_user.name}"
+  = tab_header do
+    dd.active= link_to "My Feed", '#feed', rel: 'tab'
+    dd= link_to "Watched Bugs", '#watched', rel: 'tab'
+    dd= link_to "Assigned Bugs", '#assigned', rel: 'tab'
+    dd= link_to "All Projects", '#find', rel: 'tab'
+  = tab_container do
+    .content.active#feed
+      h3 Recent Activity
+      ul#events
+    .content#watched.with_table
+      table#watched-bugs
+    .content#assigned.with-table
+      table#assigned-bugs
+    .content#find
+      .inset-content
+        p= "To change your project membership or leave a project, use the #{link_to 'My Account', squash_account_url} page.".html_safe
+        form.whitewashed
+          = search_field :q, id: 'find-project', placeholder: 'Find a Project'
+        ul.project-search-results#find-project-search-results

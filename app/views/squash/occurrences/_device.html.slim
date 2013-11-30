@@ -1,0 +1,80 @@
+h4 Device
+dl
+  - if @occurrence.device_id?
+    dt Device ID
+    dd= @occurrence.device_id
+
+  dt Type
+  dd= @occurrence.device_type
+
+  - if @occurrence.architecture?
+    dt Architecture
+    dd= @occurrence.architecture
+
+  dt Operating System
+  dd
+    = @occurrence.operating_system
+    - if @occurrence.os_version?
+      = occurrence.os_version
+    - if @occurrence.os_build?
+      = " (#{@occurrence.os_build})"
+
+  - if @occurrence.physical_memory
+    dt Physical Memory
+    d= number_to_human_size(@occurrence.physical_memory)
+
+  - if @occurrence.power_state
+    dt Power State
+    dd= @occurrence.power_state
+
+  - if @occurrence.orientation
+    dt Orientation
+    dd= @occurrence.orientation
+
+
+h4 Application
+dl
+  - if @occurrence.version?
+    dt Version
+    dd= @occurrence.version
+
+  dt Build
+  dd= @occurrence.build
+
+- if @occurrence.geo?
+  h4 Geolocation
+
+  - geotag = CGI.escape([@occurrence.lat, @occurrence.lon].join(','))
+  iframe[height=350 frameborder=0 scrolling=0 marginheight=0 marginwidth=0 src="http://maps.google.com/maps?f=q&source=s_q&hl=en&geocode=&q=#{geotag}&aq=&ie=UTF8&t=m&z=13&output=embed"]
+
+  dl
+    dt Latitude
+    dd= number_to_dms @occurrence.lat, :lat
+    dt Longitude
+    dd= number_to_dms @occurrence.lon, :lon
+    - if @occurrence.altitude?
+      dt Altitude
+      dd= "#{number_with_delimiter @occurrence.altitude} m"
+
+    - if @occurrence.location_precision?
+      dt Precision
+      dd= number_with_delimiter(@occurrence.location_precision)
+
+    - if @occurrence.heading?
+      dt Heading
+      dd="#{@occurrence.heading}°"
+
+    - if @occurrence.speed?
+      dt Speed
+      dd= "#{number_with_delimiter @occurrence.speed} m/s"
+
+- if @occurrence.mobile?
+  h4 Mobile Network
+  dl
+    dt Operator
+    dd= @occurrence.network_operator
+    dt Type
+    dd= @occurrence.network_type
+    - if @occurrence.connectivity?
+      dt Connectivity Source
+      dd= @occurrence.connectivity

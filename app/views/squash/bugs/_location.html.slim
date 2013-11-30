@@ -1,0 +1,18 @@
+h5 Location
+p#location
+  - if @bug.special_file?
+    /TODO don't guess, record this information
+    - if @bug.file =~ /^\[S\] /
+      = "<simple blamer>"
+    - else
+      = @bug.file
+  - else
+    = "#{@bug.file}, line #{number_with_delimiter @bug.line} "
+  span.aux "(revision #{commit_link(@project, @bug.revision)})"
+
+- unless @bug.library_file?
+  p#editor-links
+    - [ 'textmate', 'sublime', 'vim', 'emacs' ].each do |editor|
+      = editor_link editor, @project, @bug.file, @bug.line
+      br
+  pre.context[data-project=@project.to_param data-revision=@bug.revision data-file=@bug.file data-line=@bug.line]

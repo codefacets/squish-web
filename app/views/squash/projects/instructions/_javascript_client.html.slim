@@ -1,0 +1,50 @@
+ p do
+          text "Download the "
+          a "Squash JavaScript client library", href: 'https://github.com/SquareSquash/javascript'
+          text ". You can install it as a Rails engine, for Rails projects, or you can compile and minify the source and install it manually."
+        end
+
+        h5 "As a Rails engine"
+
+        p do
+          text "Add the "
+          code "squash_javascript"
+          text " gem to your Gemfile, then add the asset to your "
+          code "application.js"
+          text " manifest:"
+        end
+        pre <<-SH, class: 'brush: js, light: true'
+//= require squash_client
+        SH
+
+        h5 "As a JavaScript asset"
+
+        p do
+          text "Compile and minify the CoffeeScript source by running "
+          code "rake minify"
+          text ", then copy the "
+          code "vendor/assets/javascript/squash_client.min.js"
+          text " file into your project, and include it in your layout."
+        end
+
+        h5 "Configuring"
+
+        p "Configure Squash in a JavaScript file that is run before any errors can be thrown:"
+
+        pre <<-SH, class: 'brush: js, light: true'
+        Squash::Ruby.instance().configure({APIHost: '#{request.protocol + request.host_with_port}',
+                                           APIKey: '#{@project.api_key}',
+                                           environment: 'production',
+                                           revision: 'GIT_REVISION_OF_DEPLOY'})
+        SH
+
+        h5 "Source-mapping"
+
+        p do
+          text "If your toolchain is capable of generating source maps (Clojure is), you can upload those source maps to Squash to un-minify your backtraces, using the "
+          code "upload_source_map"
+          text " binary (included as part of the gem). An example command that could be added to your deploy script:"
+          pre <<-SH, class: 'brush: shell, light: true'
+/path/to/upload_source_map #{@project.api_key} production artifacts/mapping.json https://your.application/assets/minified.js
+          SH
+        end

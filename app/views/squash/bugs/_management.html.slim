@@ -1,0 +1,72 @@
+p= content_tag :em, "How are things going with this bug?"
+
+= form_for :bug, url: squash_project_environment_bug_path(@project, @environment, @bug), format: 'json', html: {class: 'labeled whitewashed', id: 'management-form'} do |f|
+  fieldset
+    h5 We're working on it.
+    = f.label :assigned_user_id
+    - members = @project.memberships.collect(&:user)
+    - assigned_user_options = members.map { |u| [ u.name, u.id ] }
+    = f.select :assigned_user_id, assigned_user_options, include_blank: true
+    - unless Squash::Configuration.jira.disabled?
+      div
+        = f.label :jira_issue
+        .field-group
+          span.input-append
+            = f.text_field :jira_issue, placeholder: "PROJECT-123", size: 14
+            span.add-on#jira-status
+          label[for='jira-projects'] or create new JIRA issue in
+          select#jira-projects[name='jira-projects' disabled='disabled']
+        p.help-block#jira-name
+        = f.label :jira_status_id, "mark this bug as fixed once the issue is"
+        = f.select :jira_status_id, [["Loading…", nil]], disabled: true
+        p.help-block With this option, you can automatically close one or more bugs when a JIRA issue is resolved.
+
+  fieldset
+    h5 We fixed it.
+
+    = f.label :fixed do
+      = f.check_box :fixed
+      span.checkbox-label This bug has been fixed
+
+    = f.label :resolution_revision
+    = f.text_field :resolution_revision, maxlength: 40
+
+    = f.label :fix_deployed do
+      = f.check_box :fix_deployed
+      span.checkbox-label The fix for this bug has been deployed
+
+  fieldset
+    h5 It’s not really a bug; no one’s going to fix it.
+
+    = f.label :irrelevant do
+      = f.check_box :irrelevant
+      span.checkbox-label Keep this bug, but don’t notify anyone about it
+
+    p … or …
+
+    = button_to "Delete this bug", squash_project_environment_bug_url(@project, @environment, @bug), 'data-sqmethod' => 'DELETE', class: 'warning', 'data-sqconfirm' => "Are you sure you want to delete this bug and all its occurrences?"
+    - if @bug.duplicate?
+      p.help-block This will remove all occurrences, comments, etc. Use for (e.g.) sensitive data or false notifications. All bugs marked as duplicate of this bug will be deleted as well.
+
+  fieldset
+    h5 It’s a duplicate of another bug.
+    = f.label :duplicate_of_number
+    .input-prepend
+      span.add-on #
+      = f.number_field :duplicate_of_number, disabled: @bug.duplicate?, class: 'input-small'
+    - unless @bug.duplicate?
+      p.help-block Make sure you enter the number correctly! This cannot be undone. All occurrences of this bug (past, present, and future) will be moved over to the bug you specify here.
+
+  fieldset
+    h5 … and I’d like to add a comment.
+    .comment
+      h6.comment-author
+        = image_tag current_user.gravatar
+        = link_to current_user.name, '#'
+      = image_tag 'comment-arrow.png'
+      .comment-body
+        = f.fields_for @bug.comments.build do |nc|
+          = nc.text_area :body, rows: 4, cols: '', id: nil
+
+  .form-actions
+    = f.submit class: 'default'

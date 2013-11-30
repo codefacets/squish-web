@@ -1,0 +1,29 @@
+/ environments_grid
+= full_width_section do
+  - @project.environments.order('name ASC').limit(20).in_groups_of(2, nil) do |environments|
+    .row
+      - environments.each_with_index do |environment, idx|
+        .six.columns
+          div[class=(environment ? 'environment' : '')]
+            - if environment
+              h3= link_to environment.name, squash_project_environment_bugs_url(@project, environment)
+              p.info
+                = pluralize_with_delimiter(environment.bugs_count, 'bug')
+                - if [:admin, :owner].include?(current_user.role(@project))
+                  = " - "
+                  span
+                    - if @project.default_environment_id == environment.id
+                      strong#default-indicator[data-id=environment.id] Default
+                    - else
+                      = link_to 'Make Default', '#', class: 'make-default', :'data-id' => environment.id
+              - if [:admin, :owner].include?(current_user.role(@project))
+                = form_for [@project, environment], url: squash_project_environment_url(@project,environment), format: 'json', namespace: "env_#{environment.name}" do |f|
+                  p
+                    = f.check_box :sends_emails
+                    '
+                    = f.label :sends_emails
+                    - unless Squash::Configuration.pagerduty.disabled
+                      '
+                      = f.check_box :notifies_pagerduty
+                      '
+                      = f.label :notifies_pagerduty

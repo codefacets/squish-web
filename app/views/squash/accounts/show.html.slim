@@ -1,0 +1,55 @@
+- @page_title = 'My Account'
+- @breadcrumbs = 'Account'
+= full_width_section do
+  h1
+    = image_tag current_user.gravatar
+    = current_user.name
+  p.alert.info
+    strong Note:
+    = "Your profile picture is being provided by #{link_to "Gravatar", 'http://en.gravatar.com'}. Visit that site to change this image."
+= tab_header do
+  ul.tab-header
+    li.active= link_to "Statistics", '#stats', rel: 'tab'
+    li= link_to "Projects", '#projects', rel: 'tab'
+    li= link_to "Emails", '#emails', rel: 'tab'
+    - if Squash::Configuration.authentication.strategy == 'password'
+      li= link_to "Settings", '#user', rel: 'tab'
+= tab_container do
+  .active#stats
+    dl
+      dt Username
+      dd= current_user.username
+      dt Main Email
+      dd= current_user.email
+      dt Joined
+      dd= l(current_user.created_at, format: :short_date)
+      dt Projects
+      dd= number_with_delimiter(current_user.memberships.count)
+      dt Projects Owned
+      dd= number_with_delimiter(current_user.owned_projects.count)
+  #projects
+    / projects
+    form.whitewashed do
+      = search_field :q, id: 'project-filter', placeholder: 'Find a project'
+      ul.project-search-results#project-results
+  #emails
+    / emails
+    form.whitewashed#email-aliases
+      p If you want to take responsibility for all exceptions caused by someone else’s commits, add his or her email address above. You’ll be emailed instead. If you only want to take responsibility for his/her exceptions in a specific project (say, s/he moved to another team), visit that project’s page and edit your membership settings.
+      p= "You can also add any email addresses that you commit under other than #{content_tag :tt, current_user.email} to become responsible for commits under those email addresses."
+  - if Squash::Configuration.authentication.strategy == 'password'
+    #user
+      / user_form
+      = form_for current_user, url: account_url(anchor: 'user'), html: { class: 'labeled whitewashed'} do |f|
+        fieldset
+          = f.label :first_name, "your name"
+          .field-group
+            = f.text_field :first_name, placeholder: "first"
+            ' &nbsp;
+            = f.text_field :last_name, placeholder: "last"
+          = f.label :password
+          = f.password_field :password
+          = f.label :password_confirmation
+          = f.password_field :password_confirmation
+        .form-actions
+          = f.submit class: 'default'

@@ -1,0 +1,21 @@
+form.labeled.whitewashed
+  label
+    = check_box_tag 'bug[notify_on_occurrence]', checked: @bug.notify_on_occurrence.include?(current_user.id), id: 'notify_on_occurrence'
+    ' Email me whenever a new occurrence of this bug is recorded
+  label
+    = check_box_tag 'bug[notify_on_deploy]', checked: @bug.notify_on_deploy.include?(current_user.id), id: 'notify_on_deploy'
+    ' Email me when the fix for this bug is deployed
+
+- nt = current_user.notification_thresholds.find_by_bug_id(@bug.id) || Squash::NotificationThreshold.new
+= form_for nt, url: squash_project_environment_bug_notification_threshold_url(@project, @environment, @bug, format: 'json'), html: {class: 'labeled whitewashed', id: 'notification-form'} do |f|
+  fieldset
+    h5 Notify me when this bug occurs a lot
+    = f.label :threshold, "this many exceptions occur"
+    = f.number_field :threshold, class: 'input-small'
+    = f.label :period, "in this period of time"
+    .field-group
+      = f.number_field :period, class: 'input-small'
+      ' seconds
+    .form-actions
+      = f.submit class: 'default'
+      = button_to 'Remove', squash_project_environment_bug_notification_threshold_url(@project, @environment, @bug), :'data-sqmethod' => 'DELETE'

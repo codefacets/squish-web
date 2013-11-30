@@ -1,0 +1,6 @@
+pre[class="brush: git; light: true"]
+  = "commit #{commit.sha}"
+  = "Author: #{commit.author.name} <#{commit.author.email}>"
+  = "Date:   #{l commit.author.date, format: :git}"
+  = ""
+  = "        #{word_wrap commit.message}"

@@ -1,0 +1,12 @@
+.comment
+  h5.comment-author
+    = image_tag current_user.gravatar
+    = link_to current_user.name, '#'
+  = image_tag 'comment-arrow.png'
+  .comment-body
+    - url_parts = [@project, @environment, @bug, @bug.comments.build]
+    = form_for url_parts, url: squash_project_environment_bug_comments_path(*url_parts) do |f|
+      = f.text_area :body, rows: 4, cols: ''
+        p= f.submit class: 'default'
+
+#comments-list

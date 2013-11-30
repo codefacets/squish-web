@@ -1,0 +1,17 @@
+ul.breadcrumb
+  - if crumbs.length > 1
+    - 0.upto(crumbs.length - 2) do |i|
+      li
+        - if crumbs[i].kind_of?(String)
+          span= crumbs[i]
+        - else
+          - options = {}
+          - options[:show_environments] = true if crumbs[i].kind_of?(Project) # hacky hack hack
+          - name = crumbs[i].kind_of?(Class) ? crumbs[i].model_name.human : crumbs[i].name
+          - url_path = crumbs[0..i]
+          - if url_path.last.kind_of?(Environment) # another hacky hack
+            - name = url_path.last.name
+            - url_path << Bug
+          = link_to name, polymorphic_url(url_path, options)
+      li.divider
+  li.active= crumbs.last.kind_of?(String) ? crumbs.last : crumbs.last.name
