@@ -35,7 +35,13 @@
       p
         ' Search exception classes, exception messages, and comments:
         = text_field_tag 'filter[search]', '', class: 'input-medium', id: 'filter_search'
-        span.aux= "(this field uses #{link_to "PostgreSQL "+content_tag(:tt,'tsquery')+" syntax", '#search-syntax-help', rel: 'modal'})"
+        span.aux
+          = "(this field uses "
+          a[href='#' data-reveal-id='search-syntax-help']
+            | PostreSQL&nbsp;
+            tt tsquery
+            | &nbsp;syntax
+          = ")"
 
 = link_to ("Help with PostgreSQL "+content_tag(:tt,'tsquery')+" syntax").html_safe, '#', class: 'button secondary tiny radius', data: { 'reveal-id' => 'search-syntax-help' }
 

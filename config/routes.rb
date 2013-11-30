@@ -13,11 +13,6 @@
 #    limitations under the License.
 
 Rails.application.routes.draw do
-  post 'api/1.0/notify' => 'api/v1#notify'
-  post 'api/1.0/deploy' => 'api/v1#deploy'
-  post 'api/1.0/symbolication' => 'api/v1#symbolication'
-  post 'api/1.0/deobfuscation' => 'api/v1#deobfuscation'
-  post 'api/1.0/sourcemap' => 'api/v1#sourcemap'
   namespace 'squash', path: '' do
     # resources :projects, only: [ :new ]
     resources :projects do
@@ -25,7 +20,7 @@ Rails.application.routes.draw do
       resources :commits do
         member { get :context }
       end
-      resources :environments, only: [:update] do
+      resources :environments, only: [ :index, :update ] do
         resources :bugs, except: [:new, :create, :edit] do
           collection { get :count }
           member { post :watch, :notify_deploy, :notify_occurrence }

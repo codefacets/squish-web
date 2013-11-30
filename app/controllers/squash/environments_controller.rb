@@ -31,6 +31,9 @@ module Squash
 
     respond_to :json
 
+    def index
+    end
+
     # Edits an Environment. Only the Project owner or an admin can modify an
     # Environment.
     #
