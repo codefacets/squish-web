@@ -3,6 +3,6 @@ fieldset
   p You'll need to configure the client with your API key.
   p
     | Your API key is:&nbsp;
-    code= @project.api_key.upcase
+    code= @project.api_key
     - if [ :owner, :admin ].include? current_user.role(@project)
       = button_to 'Regenerate API key', rekey_squash_project_url(@project), method: :patch, data: { confirm: "This will break any existing Squash client integrations. Continue?" }, class: 'button radius tiny secondary'

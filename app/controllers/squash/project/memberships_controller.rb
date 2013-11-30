@@ -149,7 +149,7 @@ module Squash
     def decorate(memberships)
       memberships.map do |membership|
         membership.as_json(include: [:user, :project]).deep_merge(
-            user:           membership.user.as_json.merge(url: user_url(membership.user), name: membership.user.name),
+            user:           membership.user.as_json.merge(url: self.respond_to?(:user_url) ? user_url(membership.user) :  squash_user_url(membership.user), name: membership.user.name),
             created_string: l(membership.created_at, format: :short_date),
             human_role:     membership.human_role.capitalize,
             role:           membership.role
