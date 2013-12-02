@@ -74,9 +74,9 @@ module Multithread
   # Does nothing if `allow_concurrency` is `false`.
 
   def start
-    @queue = PriorityQueue.new(Squash::Configuration.concurrency.multithread.priority_threshold, Squash::Configuration.concurrency.multithread.max_threads)
+    @queue = PriorityQueue.new(Squash::Configuration.concurrency.multithread[:priority_threshold], Squash::Configuration.concurrency.multithread[:max_threads])
     return unless Squash::Application.config.allow_concurrency
-    @pool = Squash::Configuration.concurrency.multithread.pool_size.times.map do |i|
+    @pool = Squash::Configuration.concurrency.multithread[:pool_size].times.map do |i|
       Thread.new { catch(:exit) { loop { @queue.deq.() } } }
     end
   end
@@ -88,7 +88,7 @@ module Multithread
 
   def stop
     return unless Squash::Application.config.allow_concurrency
-    Squash::Configuration.concurrency.multithread.pool_size.times { |i| spinoff(nil, 100) { throw :exit } }
+    Squash::Configuration.concurrency.multithread[:pool_size].times { |i| spinoff(nil, 100) { throw :exit } }
     @pool.map &:join # make this a synchronous call
   end
 
