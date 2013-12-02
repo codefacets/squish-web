@@ -16,6 +16,8 @@
 # `user_events` table) when a User watches or unwatches a Bug.
 
 class WatchObserver < ActiveRecord::Observer
+  observe 'Squash::Watch'
+
   # @private
   def after_create(watch)
     fill_feed watch
@@ -30,7 +32,7 @@ class WatchObserver < ActiveRecord::Observer
 
   def fill_feed(watch)
     # add the bug's last 10 events to the user's feed
-    UserEvent.connection.execute <<-SQL
+    Squash::UserEvent.connection.execute <<-SQL
       INSERT INTO user_events
         (user_id, event_id, created_at)
       SELECT #{watch.user_id}, id, created_at
@@ -43,7 +45,7 @@ class WatchObserver < ActiveRecord::Observer
 
   def empty_feed(watch)
     # remove all events from the user's feed pertaining to that bug
-    UserEvent.connection.execute <<-SQL
+    Squash::UserEvent.connection.execute <<-SQL
       DELETE FROM user_events
         USING events
         WHERE user_events.event_id = events.id

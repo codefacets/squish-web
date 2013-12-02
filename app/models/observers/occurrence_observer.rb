@@ -18,6 +18,8 @@
 # * creates {DeviceBug DeviceBugs} as necessary.
 
 class OccurrenceObserver < ActiveRecord::Observer
+  observe 'Squash::Occurrence'
+
   # @private
   def after_commit_on_create(occurrence)
     # send emails

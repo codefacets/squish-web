@@ -18,6 +18,8 @@
 #   information.
 
 class DeployObserver < ActiveRecord::Observer
+  observe 'Squash::Deploy'
+
   # @private
   def after_create(deploy)
     update_project_release_setting deploy

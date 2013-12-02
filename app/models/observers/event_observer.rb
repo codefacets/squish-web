@@ -19,6 +19,8 @@
 # * sends emails notifying of Bug status changes.
 
 class EventObserver < ActiveRecord::Observer
+  observe 'Squash::Event'
+
   # @private
   def after_create(event)
     copy_events_for_users event
@@ -29,7 +31,7 @@ class EventObserver < ActiveRecord::Observer
 
   def copy_events_for_users(event)
     # make user events for all the users watching this bug
-    UserEvent.connection.execute <<-SQL
+    Squash::UserEvent.connection.execute <<-SQL
       INSERT INTO user_events
         (user_id, event_id, created_at)
       SELECT user_id, #{event.id}, #{Event.connection.quote event.created_at}

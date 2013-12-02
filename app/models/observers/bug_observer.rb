@@ -19,6 +19,8 @@
 # 2. sends a notification and blame email when a Bug first occurs.
 
 class BugObserver < ActiveRecord::Observer
+  observe 'Squash::Bug'
+
   # @private
   def after_create(bug)
     create_open_event bug
@@ -48,18 +50,18 @@ class BugObserver < ActiveRecord::Observer
   private
 
   def create_open_event(bug)
-    Event.create! bug: bug, kind: 'open'
+    Squash::Event.create! bug: bug, kind: 'open'
   end
 
   def create_assign_event(bug)
     if bug.assigned_user_id_changed?
-      Event.create! bug: bug, kind: 'assign', user: (bug.modifier if bug.modifier.kind_of?(User)), data: {'assignee_id' => bug.assigned_user_id}
+      Squash::Event.create! bug: bug, kind: 'assign', user: (bug.modifier if bug.modifier.kind_of?(User)), data: {'assignee_id' => bug.assigned_user_id}
     end
   end
 
   def create_dupe_event(bug)
     if bug.duplicate_of_id_changed? && bug.duplicate_of_id
-      Event.create! bug: bug, kind: 'dupe', user: (bug.modifier if bug.modifier.kind_of?(User))
+      Squash::Event.create! bug: bug, kind: 'dupe', user: (bug.modifier if bug.modifier.kind_of?(User))
     end
   end
 
@@ -73,15 +75,15 @@ class BugObserver < ActiveRecord::Observer
                     end
 
     if bug.fixed? && !bug.fixed_was
-      Event.create! modifier_data.deep_merge(bug: bug, kind: 'close', data: {'status' => 'fixed', 'revision' => bug.resolution_revision})
+      Squash::Event.create! modifier_data.deep_merge(bug: bug, kind: 'close', data: {'status' => 'fixed', 'revision' => bug.resolution_revision})
     elsif bug.irrelevant? && !bug.irrelevant_was && !bug.fixed?
-      Event.create! modifier_data.deep_merge(bug: bug, kind: 'close', data: {'status' => 'irrelevant', 'revision' => bug.resolution_revision})
+      Squash::Event.create! modifier_data.deep_merge(bug: bug, kind: 'close', data: {'status' => 'irrelevant', 'revision' => bug.resolution_revision})
     end
   end
 
   def create_deploy_event(bug)
     if bug.fixed? && bug.fix_deployed? && !bug.fix_deployed_was
-      Event.create! bug: bug, kind: 'deploy', data: {'revision' => bug.fixing_deploy.try!(:revision)}
+      Squash::Event.create! bug: bug, kind: 'deploy', data: {'revision' => bug.fixing_deploy.try!(:revision)}
     end
   end
 
@@ -92,13 +94,13 @@ class BugObserver < ActiveRecord::Observer
 
     if !bug.fixed? && bug.fixed_was && !bug.irrelevant?
       attrs[:data]['from'] = 'fixed'
-      Event.create! attrs
+      Squash::Event.create! attrs
       Squash::Ruby.fail_silently do
         NotificationMailer.reopened(bug).deliver unless bug.modifier.kind_of?(User)
       end
     elsif !bug.fixed? && !bug.irrelevant? && bug.irrelevant_was
       attrs[:data]['from'] = 'irrelevant'
-      Event.create! attrs
+      Squash::Event.create! attrs
     end
   end
 

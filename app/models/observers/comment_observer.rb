@@ -16,6 +16,8 @@
 # as necessary.
 
 class CommentObserver < ActiveRecord::Observer
+  observe 'Squash::Comment'
+
   # @private
   def after_create(comment)
     create_event comment
@@ -30,7 +32,7 @@ class CommentObserver < ActiveRecord::Observer
   private
 
   def create_event(comment)
-    Event.create! do |event|
+    Squash::Event.create! do |event|
       event.bug_id  = comment.bug_id
       event.kind    = 'comment'
       event.data    = {'comment_id' => comment.id}
