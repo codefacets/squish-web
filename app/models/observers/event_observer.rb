@@ -34,7 +34,7 @@ class EventObserver < ActiveRecord::Observer
     Squash::UserEvent.connection.execute <<-SQL
       INSERT INTO user_events
         (user_id, event_id, created_at)
-      SELECT user_id, #{event.id}, #{Event.connection.quote event.created_at}
+      SELECT user_id, #{event.id}, #{Squash::Event.connection.quote event.created_at}
         FROM watches
         WHERE bug_id = #{event.bug_id}
     SQL
